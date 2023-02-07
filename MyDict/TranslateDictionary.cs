@@ -23,6 +23,10 @@ namespace MyDict
             _mergeList = new List<Tuple<int, int>>();
         }
 
+        public Language Base => _base;
+        public Language Translate1 => _translate;
+        public static string UnknownTranslated => UNKNOWN_TRANSLATED;
+
         public void Add(string word, string translateWord)
         {
             bool presentInFirstDict = _words.ContainsKey(word);
@@ -196,12 +200,12 @@ namespace MyDict
             }
         }
 
-        public void SetWord(string word, string oldWord, string newWord)
+        public void Set(string word, string oldWord, string newWord)
         {
-            throw new System.NotImplementedException();
+            Add(word, newWord);
+            _mergeList.Remove(new Tuple<int, int>(word.GetHashCode(), oldWord.GetHashCode()));
+            RemoveWordsWithoutConnection(_translate);
         }
-
-        
     }
 
     public enum Language

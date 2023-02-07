@@ -15,8 +15,8 @@
             dictionary.Add("house", "дом");
 
             var res = dictionary.Translate("получить");
-
-            bool removeStatus = dictionary.Remove("house", "дом");
+           // bool removeStatus = dictionary.Remove("house", "дом");
+            dictionary.SetWord("house", "дом", "ДОМ");
         }
     }
 }

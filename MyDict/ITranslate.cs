@@ -6,7 +6,7 @@ namespace MyDict
     {
         void Add(string word, string translateWord);
         bool Remove(string word, string translatedWord);
-        void SetWord(string word, string oldWord, string newWord);
+        void Set(string word, string oldWord, string newWord);
         List<string> Translate(string word);
     }
 }
