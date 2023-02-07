@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyDict", "MyDict\MyDict.csproj", "{035A3D22-A9BF-486B-A7A3-872F53425690}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{035A3D22-A9BF-486B-A7A3-872F53425690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{035A3D22-A9BF-486B-A7A3-872F53425690}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{035A3D22-A9BF-486B-A7A3-872F53425690}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{035A3D22-A9BF-486B-A7A3-872F53425690}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
