@@ -42,7 +42,7 @@ namespace MyDict
             } 
             _mergeList.Add(new Tuple<int, int>(word.GetHashCode(), translateWord.GetHashCode()));
         }
-        
+
         public List<string> Translate(string word)
         {
             List<string> result = new List<string>();
@@ -58,7 +58,7 @@ namespace MyDict
             else if (_translatedWords.ContainsKey(word))
             {
                 List<int> temp = GetMapping(word, _translate);
-                foreach (var pair in _translatedWords)
+                foreach (var pair in _words)
                 {
                     if(temp.Contains(pair.Value))
                         result.Add(pair.Key);
@@ -86,7 +86,7 @@ namespace MyDict
             }
             else
             {
-                int hash = _words[word];
+                int hash = _translatedWords[word];
                 foreach (var item in _mergeList)
                 {
                     if(item.Item2 == hash)
@@ -97,19 +97,102 @@ namespace MyDict
             return result;
         }
 
-        public void Remove(string word)
+        public bool Remove(string word, string translatedWord)
         {
-            if (_words.ContainsKey(word))
-            {
-                
-            }
-            else if (_translatedWords.ContainsKey(word))
-            {
+            if (!_translatedWords.ContainsKey(translatedWord))
+                return false;
 
+            List<int> temp = GetMapping(word, _base);
+            if (temp.Count == 1)
+                return false;
+            _mergeList.Remove(new Tuple<int, int>(word.GetHashCode(), translatedWord.GetHashCode()));
+
+            _translatedWords.Remove(word);
+            RemoveWordsWithoutConnection(_translate);
+            return true;
+        }
+
+        public bool Remove(string word)
+        {
+            if (!_words.ContainsKey(word))
+                return false;
+            
+            int hash = _words[word];
+            List<Tuple<int, int>> temp = new List<Tuple<int, int>>();
+            foreach (var item in _mergeList)
+            {
+                if (item.Item1 == hash)
+                    temp.Add(new Tuple<int, int>(item.Item1, item.Item2));
+            }
+
+            foreach (var item in temp)
+            {
+                _mergeList.Remove(item);
+            }
+
+            _words.Remove(word);
+            RemoveWordsWithoutConnection(_translate);
+            return true;
+        }
+        
+        
+
+        private void RemoveWordsWithoutConnection(Language lang)
+        {
+            if (lang == _translate)
+            {
+                if (_mergeList.Count == 0)
+                    _translatedWords.Clear();
+
+                List<KeyValuePair<string, int>> temp = new List<KeyValuePair<string, int>>();
+                foreach (var pair in _translatedWords)
+                {
+                    int hash = pair.Value;
+                    bool flag = true;
+                    foreach (var item in _mergeList)
+                    {
+                        if (item.Item2 == hash)
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+
+                    if (flag)
+                        temp.Add(new KeyValuePair<string, int>(pair.Key, pair.Value));
+                }
+
+                foreach (var pair in temp)
+                {
+                    _translatedWords.Remove(pair.Key);
+                }
             }
             else
             {
-                throw new ArgumentException($"Deleting a non-existent word: {word}");
+                if (_mergeList.Count == 0)
+                    _words.Clear();
+                
+                List<KeyValuePair<string, int>> temp = new List<KeyValuePair<string, int>>();
+                foreach (var pair in _words)
+                {
+                    int hash = pair.Value;
+                    bool flag = true;
+                    foreach (var item in _mergeList)
+                    {
+                        if (item.Item1 == hash)
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+
+                    if (flag)
+                        temp.Add(new KeyValuePair<string, int>(pair.Key, pair.Value));
+                }
+                foreach (var pair in temp)
+                {
+                    _words.Remove(pair.Key);
+                }
             }
         }
 
