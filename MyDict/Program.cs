@@ -13,10 +13,15 @@
             dictionary.Add("in", "по");
             dictionary.Add("in", "под");
             dictionary.Add("house", "дом");
+            dictionary.Add("save", "сохранять");
+            dictionary.Add("keep", "сохранять");
+            dictionary.Add("retain", "сохранять");
 
-            var res = dictionary.Translate("получить");
-           // bool removeStatus = dictionary.Remove("house", "дом");
-            dictionary.SetWord("house", "дом", "ДОМ");
+
+            var res = dictionary.Translate("сохранять");
+           bool removeStatus = dictionary.Remove("save");
+           bool removeStatus2 = dictionary.Remove("in", "на");
+           dictionary.Remove("house", "дом");
         }
     }
 }

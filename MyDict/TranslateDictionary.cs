@@ -7,26 +7,27 @@ namespace MyDict
     {
         private Dictionary<string, int> _words;
         private Dictionary<string, int> _translatedWords;
-        private List<Tuple<int, int>> _mergeList;
+        private LinkedList<Tuple<int, int>> _mergeList;
 
-        private Language _base;
-        private Language _translate;
+        private Language _baseLanguage;
+        private Language _translateLanguage;
         
-        private static string UNKNOWN_TRANSLATED = "*";
+        private static string UNKNOWN_TRANSLATED_WORD = "*";
 
         public TranslateDictionary(Language l1, Language l2)
         {
-            _base = l1;
-            _translate = l2;
+            _baseLanguage = l1;
+            _translateLanguage = l2;
             _words = new Dictionary<string, int>();
             _translatedWords = new Dictionary<string, int>();
-            _mergeList = new List<Tuple<int, int>>();
+            _mergeList = new LinkedList<Tuple<int, int>>();
         }
 
-        public Language Base => _base;
-        public Language Translate1 => _translate;
-        public static string UnknownTranslated => UNKNOWN_TRANSLATED;
+        public Language BaseLanguageLang => _baseLanguage;
+        public Language TranslateLanguageLang => _translateLanguage;
+        public static string UnknownTranslatedWord => UNKNOWN_TRANSLATED_WORD;
 
+        
         public void Add(string word, string translateWord)
         {
             bool presentInFirstDict = _words.ContainsKey(word);
@@ -44,7 +45,7 @@ namespace MyDict
                 _words[word] = word.GetHashCode();
                 _translatedWords[translateWord] = translateWord.GetHashCode();
             } 
-            _mergeList.Add(new Tuple<int, int>(word.GetHashCode(), translateWord.GetHashCode()));
+            _mergeList.AddLast(new Tuple<int, int>(word.GetHashCode(), translateWord.GetHashCode()));
         }
 
         public List<string> Translate(string word)
@@ -52,7 +53,7 @@ namespace MyDict
             List<string> result = new List<string>();
             if (_words.ContainsKey(word))
             {
-                List<int> temp = GetMapping(word, _base);
+                List<int> temp = GetMapping(word, _baseLanguage);
                 foreach (var pair in _translatedWords)
                 {
                     if(temp.Contains(pair.Value))
@@ -61,7 +62,7 @@ namespace MyDict
             } 
             else if (_translatedWords.ContainsKey(word))
             {
-                List<int> temp = GetMapping(word, _translate);
+                List<int> temp = GetMapping(word, _translateLanguage);
                 foreach (var pair in _words)
                 {
                     if(temp.Contains(pair.Value))
@@ -70,7 +71,7 @@ namespace MyDict
             }
             else
             {
-                result.Add(UNKNOWN_TRANSLATED);
+                result.Add(UNKNOWN_TRANSLATED_WORD);
             }
 
             return result;
@@ -79,7 +80,7 @@ namespace MyDict
         private List<int> GetMapping(string word, Language target)
         {
             List<int> result = new List<int>();
-            if (target == _base)
+            if (target == _baseLanguage)
             {
                 int hash = _words[word];
                 foreach (var item in _mergeList)
@@ -106,13 +107,13 @@ namespace MyDict
             if (!_translatedWords.ContainsKey(translatedWord))
                 return false;
 
-            List<int> temp = GetMapping(word, _base);
+            List<int> temp = GetMapping(word, _baseLanguage);
             if (temp.Count == 1)
                 return false;
             _mergeList.Remove(new Tuple<int, int>(word.GetHashCode(), translatedWord.GetHashCode()));
 
             _translatedWords.Remove(word);
-            RemoveWordsWithoutConnection(_translate);
+            RemoveWordsWithoutConnection(_translateLanguage);
             return true;
         }
 
@@ -135,15 +136,20 @@ namespace MyDict
             }
 
             _words.Remove(word);
-            RemoveWordsWithoutConnection(_translate);
+            RemoveWordsWithoutConnection(_translateLanguage);
             return true;
         }
         
-        
+        public void Set(string word, string oldWord, string newWord)
+        {
+            Add(word, newWord);
+            _mergeList.Remove(new Tuple<int, int>(word.GetHashCode(), oldWord.GetHashCode()));
+            RemoveWordsWithoutConnection(_translateLanguage);
+        }
 
         private void RemoveWordsWithoutConnection(Language lang)
         {
-            if (lang == _translate)
+            if (lang == _translateLanguage)
             {
                 if (_mergeList.Count == 0)
                     _translatedWords.Clear();
@@ -198,13 +204,6 @@ namespace MyDict
                     _words.Remove(pair.Key);
                 }
             }
-        }
-
-        public void Set(string word, string oldWord, string newWord)
-        {
-            Add(word, newWord);
-            _mergeList.Remove(new Tuple<int, int>(word.GetHashCode(), oldWord.GetHashCode()));
-            RemoveWordsWithoutConnection(_translate);
         }
     }
 
